@@ -21,22 +21,10 @@ jobs:
       matrix:
         include:
           # -------- Mobile --------
-          - name: aab
-            runner: ubuntu-latest
-            build_cmd: "flet build aab"
-            artifact_path: build/aab
-            needs_linux_deps: false
-
           - name: apk
             runner: ubuntu-latest
             build_cmd: "flet build apk"
             artifact_path: build/apk
-            needs_linux_deps: false
-
-          - name: ipa
-            runner: macos-26
-            build_cmd: "flet build ipa"
-            artifact_path: build/ipa
             needs_linux_deps: false
 
           - name: ios-simulator
