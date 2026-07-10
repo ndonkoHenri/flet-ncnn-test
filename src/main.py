@@ -1,13 +1,18 @@
 import flet as ft
 
+import langchain
+import langchain_core
+import langgraph
+import pydantic
+import pydantic_core
+import langgraph.graph
+
 
 def main(page: ft.Page):
+    page.horizontal_alignment = page.vertical_alignment = "center"
     page.add(
         ft.SafeArea(
-            content=ft.Column(
-                spacing=12,
-                controls=[],
-            ),
+            content=ft.Text("It works..."),
         )
     )
 
