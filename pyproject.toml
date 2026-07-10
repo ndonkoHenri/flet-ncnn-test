@@ -18,6 +18,8 @@ dev = [
     "flet[all]==0.86.0.dev2",
 ]
 
+[tool.uv]
+prerelease = "allow"
 
 [tool.flet]
 org = "com.mycompany"
