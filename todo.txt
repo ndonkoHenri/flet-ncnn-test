@@ -1,8 +1,0 @@
- Create a real-time object detection  using Python Flet, OpenCV, and YOLOv11 via the Ultralytics library. 
- 1. Project specifications and constraints: Target platform: Mobile Android  and desktop Web standalone application. UI framework: Python Flet (Flutter engine runner).Inference engine: Ultralytics YOLOv11 nano model (yolov11n).Video processing: OpenCV (cv2) capturing from the native Android camera pipeline.Performance target: Minimum 15–20 FPS on mid-range Android devices.
- 2. Flet's SKILL.md is in ./.github/skills subdirectory
- 3. A reference static image detection example is in ./src/flet_detect_holding.py 
- 4. To prevent the application from freezing or triggering Android "Application Not Responding" (ANR) dialogs, you must isolate execution loops.The primary thread must be dedicated strictly to the Flet UI loop.All frame capture, image resizing, model inference, and coordinate bounding-box plotting operations may execute within a Python asynchronous worker task. you can decide the best practice
- 5. Core architectureTo achieve real-time speeds, your app must separate the user interface from the heavy computer vision processing.Model conversion: Export your YOLOv11 model to ONNX (yolov11n.onnx) or TensorFlow Lite (yolov11n_saved_model) format. 
- The "nano" (n) variant is highly recommended for mobile.Processing bridge: Use Flet's cv2 integration or a background thread to process frames without locking up the Flet user interface thread.Camera management: Use Flet's native camera components or feed an OpenCV VideoCapture stream frame-by-frame into a Flet Image control using base64 encoding.
- 6. some documentations: https://flet.dev/docs/controls/camera/  , yolov11n: https://docs.ultralytics.com/models/yolo11#overview
