@@ -51,7 +51,7 @@ jobs:
       - name: Build app
         shell: bash
         run: |
-          uv run ${{ matrix.build_cmd }} --yes --verbose
+          uv run ${{ matrix.build_cmd }} --yes --verbose --python-version "${UV_PYTHON}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v5.0.0
