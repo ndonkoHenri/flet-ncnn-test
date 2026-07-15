@@ -8,14 +8,17 @@ authors = [
     { name = "Flet developer", email = "you@example.com" }
 ]
 dependencies = [
-    "flet >=0.86.0.dev0",
+    "flet >=0.86.0",
     "langchain >=1.3.4",
+    "langchain-openai",
+    "langgraph",
     "pydantic",
+    "python-dotenv",
 ]
 
 [dependency-groups]
 dev = [
-    "flet[all] >=0.86.0.dev0",
+    "flet[all] >=0.86.0",
 ]
 
 [tool.uv]
