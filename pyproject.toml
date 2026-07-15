@@ -39,5 +39,6 @@ copyright = "Copyright (C) 2023-2026 by Flet"
 path = "src"
 
 [tool.flet.android]
-extract_packages = ["cv2"]
 target_arch = ["arm64-v8a", "armeabi-v7a", "x86_64"]
+# https://flet.dev/docs/publish/android#extract-packages
+# extract_packages = ["cv2"]
