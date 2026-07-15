@@ -34,3 +34,10 @@ copyright = "Copyright (C) 2023-2026 by Flet"
 
 [tool.flet.app]
 path = "src"
+
+# opencv's cv2/__init__.py bootstrap reads its config by a real __file__ path
+# (os.path.exists("config.py") + os.listdir), which fails inside Flet 0.86's
+# compressed sitepackages.zip ("missing configuration file: ['config.py']").
+# Ship cv2 extracted to disk so those reads resolve. (Android only.)
+[tool.flet.android]
+extract_packages = ["cv2"]
