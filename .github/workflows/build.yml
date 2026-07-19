@@ -5,58 +5,55 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  UV_PYTHON: 3.12
-  PYTHONUTF8: 1
-
-  # https://flet.dev/docs/reference/environment-variables
-  FLET_CLI_NO_RICH_OUTPUT: 1
-
 jobs:
   build:
-    name: Build ${{ matrix.name }}
+    name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # -------- Mobile --------
-          - name: apk
+          - target: apk
             runner: ubuntu-latest
-            build_cmd: "flet build apk"
-            artifact_path: build/apk
-            needs_linux_deps: false
 
-          - name: ios-simulator
-            runner: macos-26
-            build_cmd: "flet build ios-simulator"
-            artifact_path: build/ios-simulator
-            needs_linux_deps: false
+          - target: aab
+            runner: ubuntu-latest
+
+          - target: web
+            runner: ubuntu-latest
+
+          - target: linux
+            runner: ubuntu-latest
+
+          - target: windows
+            runner: windows-latest
+
+          - target: macos
+            runner: macos-latest
+
+          - target: ipa
+            runner: macos-latest
+
+          - target: ios-simulator
+            runner: macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v6
-
-      - name: Install Linux dependencies
-        if: matrix.needs_linux_deps
-        shell: bash
-        run: |
-            sudo apt update --allow-releaseinfo-change
-            LINUX_DEPS="$(uv run python -c 'from flet.utils.linux_deps import linux_dependencies; print(" ".join(linux_dependencies))')"
-            sudo apt-get install -y --no-install-recommends $LINUX_DEPS
-            sudo apt-get clean
-
       - name: Build app
-        shell: bash
-        run: |
-          uv run ${{ matrix.build_cmd }} --yes --verbose --python-version "${UV_PYTHON}"
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v5.0.0
+        id: build
+        uses: ndonkoHenri/flet-build-action@main
         with:
-          name: ${{ matrix.name }}-build-artifact
-          path: ${{ matrix.artifact_path }}
+          target: ${{ matrix.target }}
+          runner-python-version: "3.12"
+          bundled-python-version: "3.12"
+          build-number: ${{ github.run_number }}
+          archive-output: true
+
+      - name: Upload build archive
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.build.outputs.archive-path }}
+          archive: false
           if-no-files-found: error
           overwrite: false
