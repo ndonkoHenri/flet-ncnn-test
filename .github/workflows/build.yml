@@ -38,11 +38,11 @@ jobs:
             runner: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build app
         id: build
-        uses: ndonkoHenri/flet-build-action@main
+        uses: flet-dev/flet-build-action@v1
         with:
           target: ${{ matrix.target }}
           runner-python-version: "3.12"
