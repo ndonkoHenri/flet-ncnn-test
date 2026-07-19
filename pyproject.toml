@@ -1,5 +1,5 @@
 [project]
-name = "forge-test"
+name = "sample"
 version = "0.1.0"
 description = ""
 readme = "README.md"
@@ -8,25 +8,17 @@ authors = [
     { name = "Flet developer", email = "you@example.com" }
 ]
 dependencies = [
-    "flet >=0.86.0",
-    "langchain >=1.3.4",
-    "langchain-openai",
-    "langgraph",
-    "pydantic",
-    "python-dotenv",
+    "flet",
 ]
 
 [dependency-groups]
 dev = [
-    "flet[all] >=0.86.0",
+    "flet[all]",
 ]
-
-[tool.uv]
-prerelease = "allow"
 
 [tool.flet]
 org = "com.mycompany"
-product = "forge-test"
+product = "sample"
 company = "Flet"
 copyright = "Copyright (C) 2023-2026 by Flet"
 
