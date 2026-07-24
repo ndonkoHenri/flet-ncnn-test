@@ -5,15 +5,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  macos:
+  build:
     name: Build macos (Developer ID, notarized)
     runs-on: macos-latest
-    # Job-level so the credentials reach the steps inside the composite
-    # flet-build-action as well.
-    env:
-      APPLE_API_KEY: ${{ runner.temp }}/AuthKey.p8
-      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -25,7 +19,7 @@ jobs:
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
 
       - name: Materialize App Store Connect API key
-        run: printf '%s' "${{ secrets.APPLE_API_KEY_P8 }}" > "$APPLE_API_KEY"
+        run: printf '%s' "${{ secrets.APPLE_API_KEY_P8 }}" > "$RUNNER_TEMP/AuthKey.p8"
 
       # No signing identity is configured anywhere: the imported
       # certificate is the only one in the runner's keychain, so
@@ -33,6 +27,10 @@ jobs:
       - name: Build, sign and notarize
         id: build
         uses: flet-dev/flet-build-action@v1
+        env:
+          APPLE_API_KEY: ${{ runner.temp }}/AuthKey.p8
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         with:
           target: macos
           build-number: ${{ github.run_number }}
