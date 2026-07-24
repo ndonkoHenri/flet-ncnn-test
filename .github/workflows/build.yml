@@ -1,59 +1,54 @@
-name: Build Flet App
+name: Build, sign and notarize macOS app
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build ${{ matrix.target }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: apk
-            runner: ubuntu-latest
-
-          - target: aab
-            runner: ubuntu-latest
-
-          - target: web
-            runner: ubuntu-latest
-
-          - target: linux
-            runner: ubuntu-latest
-
-          - target: windows
-            runner: windows-latest
-
-          - target: macos
-            runner: macos-latest
-
-          - target: ipa
-            runner: macos-latest
-
-          - target: ios-simulator
-            runner: macos-latest
+  macos:
+    name: Build macos (Developer ID, notarized)
+    runs-on: macos-latest
+    # Job-level so the credentials reach the steps inside the composite
+    # flet-build-action as well.
+    env:
+      APPLE_API_KEY: ${{ runner.temp }}/AuthKey.p8
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      - name: Build app
+      - name: Import signing certificate
+        uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+
+      - name: Materialize App Store Connect API key
+        run: printf '%s' "${{ secrets.APPLE_API_KEY_P8 }}" > "$APPLE_API_KEY"
+
+      # No signing identity is configured anywhere: the imported
+      # certificate is the only one in the runner's keychain, so
+      # flet's identity auto-discovery finds it.
+      - name: Build, sign and notarize
         id: build
         uses: flet-dev/flet-build-action@v1
         with:
-          target: ${{ matrix.target }}
-          runner-python-version: "3.12"
-          bundled-python-version: "3.12"
+          target: macos
           build-number: ${{ github.run_number }}
+          extra-args: -v --macos-distribution developer-id
           archive-output: true
+
+      - name: Verify signature and staple
+        run: |
+          codesign --verify --deep --strict --verbose=2 "${{ steps.build.outputs.output-path }}"/*.app
+          xcrun stapler validate "${{ steps.build.outputs.output-path }}"/*.app
+          spctl --assess --type execute --verbose=2 "${{ steps.build.outputs.output-path }}"/*.app
 
       - name: Upload build archive
         uses: actions/upload-artifact@v7
         with:
+          name: macos-signed-app
           path: ${{ steps.build.outputs.archive-path }}
           archive: false
           if-no-files-found: error
-          overwrite: false
