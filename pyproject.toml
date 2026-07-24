@@ -10,12 +10,12 @@ authors = [
 dependencies = [
     # direct reference (not [tool.uv.sources]) so `flet build`'s pip
     # packaging bundles the same branch into the app
-    "flet @ git+https://github.com/flet-dev/flet.git@fix/macos-sign-notarize-2#subdirectory=sdk/python/packages/flet",
+    "flet @ git+https://github.com/flet-dev/flet.git@test-macos-signing#subdirectory=sdk/python/packages/flet",
 ]
 
 [dependency-groups]
 dev = [
-    "flet-cli @ git+https://github.com/flet-dev/flet.git@fix/macos-sign-notarize-2#subdirectory=sdk/python/packages/flet-cli",
+    "flet-cli @ git+https://github.com/flet-dev/flet.git@test-macos-signing#subdirectory=sdk/python/packages/flet-cli",
 ]
 
 [tool.flet]
